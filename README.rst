@@ -1,9 +1,86 @@
-====
-MACH
-====
+========
+M.A.C.H
+========
+
+Magical Argparse Command Helper
+-------------------------------
 
 Features
 --------
 
-* Get your CLI interfaces quickly
+ * Get your CLI interfaces quickly
+ * Turn a simple class to a CLI application or an interactive interpreter.
+
+
+Given:
+
+.. code:: python
+
+  class Calculator:
+
+      def add(self, a, b):
+          """adds two numbers and prints the result"""
+          return a + b
+
+      def div(self, a, b):
+          """divide one number by the other"""
+          return a / b
+
+You can make command line application using the decorator ``mach1``:
+
+.. code:: python
+
+   from mach import mach1
+
+   class Calculator:
+
+       def add(self, int: a, int: b):
+           """adds two numbers and prints the result"""
+          print(a + b)
+
+       def div(self, int: a, int: b):
+           """divide one number by the other"""
+          print(a / b)
+
+
+   calc = Calculator()
+
+   calc.run()
+
+Now if you run the module, you will get a program that you can invoke with
+the flag ``-h`` or ``--help``::
+
+$ python calc.py -h
+usage: calc.py [-h] {add,div} ...
+
+positional arguments:
+  {add,div}   commands
+    add       adds two numbers and prints the result
+    div       divide one number by the other
+
+optional arguments:
+  -h, --help  show this help message and exit
+
+
+each method is a subcommand, with type checking and it's own very help.
+Hench, this won't work::
+
+$ python calc.py add foo bar
+usage: calc.py add [-h] b a
+calc.py add: error: argument b: invalid int value: 'foo'
+
+And this will::
+$ python calc.py add 4 9
+13
+
+To see the help of the subcommand use ``-h``:
+ python calc.py add -h
+usage: calc.py add [-h] b a
+
+positional arguments:
+  b
+  a
+
+optional arguments:
+  -h, --help  show this help message and exit
 
