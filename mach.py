@@ -51,6 +51,9 @@ class Mach(Cmd):
                 pass
         try:
             return func(*arg, **di)
+        except ValueError:
+            return self.default(line)
+
         except TypeError:
             pass
 
