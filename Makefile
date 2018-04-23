@@ -3,7 +3,6 @@
 
 define BROWSER_PYSCRIPT
 import os, webbrowser, sys
-
 try:
 	from urllib import pathname2url
 except:
@@ -15,12 +14,12 @@ export BROWSER_PYSCRIPT
 
 define PRINT_HELP_PYSCRIPT
 import re, sys
-
+cyan, reset = '\033[36m', '\033[0m'
 for line in sys.stdin:
 	match = re.match(r'^([a-zA-Z_-]+):.*?## (.*)$$', line)
 	if match:
 		target, help = match.groups()
-		print("%-20s %s" % (target, help))
+		print("%s%-20s%s %s" % (cyan, target, reset, help))
 endef
 export PRINT_HELP_PYSCRIPT
 
