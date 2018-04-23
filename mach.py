@@ -14,6 +14,33 @@ def partition(pred, iterable):
     return list(filterfalse(pred, t1)), list(filter(pred, t2))
 
 
+class DefaultSubcommandArgParse(argparse.ArgumentParser):
+    # https://stackoverflow.com/a/37593636/492620
+    __default_subparser = None
+
+    def set_default_subparser(self, name):
+        self.__default_subparser = name
+
+    def _parse_known_args(self, arg_strings, *args, **kwargs):
+        in_args = set(arg_strings)
+        d_sp = self.__default_subparser
+        if d_sp is not None and not {'-h', '--help'}.intersection(in_args):
+            for x in self._subparsers._actions:
+                subparser_found = (
+                    isinstance(x, argparse._SubParsersAction) and
+                    in_args.intersection(x._name_parser_map.keys())
+                )
+                if subparser_found:
+                    break
+            else:
+                # insert default in first position, this implies no
+                # global options without a sub_parsers specified
+                arg_strings = [d_sp] + arg_strings
+        return super(DefaultSubcommandArgParse, self)._parse_known_args(
+            arg_strings, *args, **kwargs
+        )
+
+
 class Mach(Cmd):
 
     def onecmd(self, line):
@@ -98,8 +125,12 @@ def add_parsers(name, function, doc, sig, subparsers):
 
 def _mach(kls, add_do=False):
 
-    parser = argparse.ArgumentParser(
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    if hasattr(kls, 'default'):
+        parser = DefaultSubcommandArgParse(
+            formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    else:
+        parser = argparse.ArgumentParser(
+            formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     subparsers = parser.add_subparsers(help='commands', dest="cmd")
 
@@ -114,6 +145,9 @@ def _mach(kls, add_do=False):
 
         if add_do:
             setattr(do_kls, "do_%s" % name, function)
+
+    if hasattr(kls, 'default'):
+        parser.set_default_subparser(kls.default)
 
     if add_do:
         kls = do_kls
