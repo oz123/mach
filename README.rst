@@ -48,39 +48,76 @@ You can make command line application using the decorator ``mach1``:
    calc.run()
 
 Now if you run the module, you will get a program that you can invoke with
-the flag ``-h`` or ``--help``::
+the flag ``-h`` or ``--help``:x:
 
-$ python calc.py -h
-usage: calc.py [-h] {add,div} ...
+.. code:: shell
 
-positional arguments:
-  {add,div}   commands
-    add       adds two numbers and prints the result
-    div       divide one number by the other
+   $ python calc.py -h
+   usage: calc.py [-h] {add,div} ...
 
-optional arguments:
-  -h, --help  show this help message and exit
+   positional arguments:
+   {add,div}   commands
+
+      add       adds two numbers and prints the result
+      div       divide one number by the other
+
+   optional arguments:
+     -h, --help  show this help message and exit
 
 
 each method is a subcommand, with type checking and it's own very help.
-Hench, this won't work::
+Hench, this won't work:
 
-$ python calc.py add foo bar
-usage: calc.py add [-h] b a
-calc.py add: error: argument b: invalid int value: 'foo'
+.. code:: shell
 
-And this will::
-$ python calc.py add 4 9
-13
+   $ python calc.py add foo bar
+   usage: calc.py add [-h] b a
+   calc.py add: error: argument b: invalid int value: 'foo'
+
+And this will:
+
+.. code:: shell
+
+   $ python calc.py add 4 9
+   13
 
 To see the help of the subcommand use ``-h``:
- python calc.py add -h
-usage: calc.py add [-h] b a
 
-positional arguments:
-  b
-  a
+.. code:: shell
 
-optional arguments:
-  -h, --help  show this help message and exit
+   $ python calc.py add -h
+   usage: calc.py add [-h] b a
+
+   positional arguments:
+    b
+    a
+
+   optional arguments:
+     -h, --help  show this help message and exit
+
+With the help of the decorator ``mach2`` you can turn your class to CLI
+application and have also an iteractive shell which invoke when no
+parameters are given:
+
+.. code:: shell
+
+   $ ./examples/calc2.py
+   Welcome to the calc shell. Type help or ? to list commands.
+
+   calc2 > ?
+
+   Documented commands (type help <topic>):
+   ========================================
+   add  div  exit  help
+
+   calc2 > help add
+   adds two numbers and prints the result
+   calc2 > add 2 4
+   6
+   calc2 > div 6 2
+   3.0
+   calc2 > exit
+   Come back soon ...
+   $
+
 
