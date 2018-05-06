@@ -102,6 +102,9 @@ def add_parsers(name, function, doc, sig, subparsers):
 
     idx_args_with_defaults = len(sig.defaults) if sig.defaults else 0
 
+    if sig.defaults:
+        _defaults = list(reversed(sig.defaults))
+
     for idx, val in enumerate(reversed(sig.args[1:])):
         subpargs, opts = [], {}
         type_ = sig.annotations.get(val)
@@ -110,7 +113,8 @@ def add_parsers(name, function, doc, sig, subparsers):
         elif type_ and type_.__name__ in _supported_types:
                 opts['type'] = _supported_types[type_.__name__]
         if idx_args_with_defaults and idx < idx_args_with_defaults:
-            opts['default'] = sig.defaults[idx]
+            opts['default'] = _defaults[idx]
+            # opts['help'] = "default: %s" % opts['default'] if opts['default'] else ""
             subpargs.append("--" + val)
         else:
             subpargs.append(val)
