@@ -20,8 +20,18 @@ which is invoked if no other subcommand is given::
    Hello Tom
    $
 
+This example also shows how you can use a special format for the method
+docstring to expand the help of subcommands options::
 
+   $ ./examples/greet.py greet -h
+usage: greet.py greet [-h] [--name NAME] [--count COUNT]
+
+optional arguments:
+  -h, --help     show this help message and exit
+  --name NAME    the name of the user to greet (default: )
+  --count COUNT  the number of times to greet the user (default: 1)
 """
+
 from mach import mach1
 
 
