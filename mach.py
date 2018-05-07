@@ -94,11 +94,27 @@ class Mach(Cmd):
 _supported_types = {'str': str, 'float': float, 'int': int}
 
 
+def parse_docs(docstring):
+    """
+    Parse documentation string and create a help string
+    """
+
+    doc = docstring.split("\n")
+    doc_dict = {'cmd': doc[0]}
+
+    if len(doc) > 1:
+        doc = {k: v for k, v in
+               (item.split(' - ') for item in
+                list(filter(lambda x: x, doc))[1:])}
+        doc_dict.update(doc)
+    return doc_dict
+
+
 def add_parsers(name, function, doc, sig, subparsers):
 
     subp = subparsers.add_parser(
         name, formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        help=doc)
+        help=doc['cmd'])
 
     idx_args_with_defaults = len(sig.defaults) if sig.defaults else 0
 
@@ -107,6 +123,7 @@ def add_parsers(name, function, doc, sig, subparsers):
 
     for idx, val in enumerate(reversed(sig.args[1:])):
         subpargs, opts = [], {}
+        opts['help'] = doc[val]
         type_ = sig.annotations.get(val)
         if type_ and type_.__name__ == 'bool':
             opts['action'] = "store_true"
@@ -114,7 +131,6 @@ def add_parsers(name, function, doc, sig, subparsers):
                 opts['type'] = _supported_types[type_.__name__]
         if idx_args_with_defaults and idx < idx_args_with_defaults:
             opts['default'] = _defaults[idx]
-            # opts['help'] = "default: %s" % opts['default'] if opts['default'] else ""
             subpargs.append("--" + val)
         else:
             subpargs.append(val)
@@ -143,7 +159,7 @@ def _mach(kls, add_do=False):
 
     for (name, function) in inspect.getmembers(kls,
                                                predicate=inspect.isfunction):
-        doc = inspect.getdoc(function)
+        doc = parse_docs(inspect.getdoc(function))
         sig = inspect.getfullargspec(function)
         add_parsers(name, function, doc, sig, subparsers)
 

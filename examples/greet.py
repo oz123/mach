@@ -31,7 +31,12 @@ class Hello:
     default = 'greet'
 
     def greet(self, count: int=1, name: str=""):
-        "Greets a user one or more times"
+        """Greets a user one or more times
+
+        count - the number of times to greet the user
+        name - the name of the user to greet
+        """
+
         if not name:
             name = input('Your name: ')
 
@@ -39,7 +44,7 @@ class Hello:
             print("Hello %s" % name)
 
     def part(self):
-        "Politely part from a user"
+        """Politely part from a user"""
         print("It was nice to meet you!")
 
 
