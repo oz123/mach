@@ -8,12 +8,5 @@ Welcome to mach's documentation!
    readme
    installation
    usage
-   modules
    contributing
    history
-
-Indices and tables
-==================
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`

@@ -32,6 +32,7 @@ You can make command line application using the decorator ``mach1``:
 
    from mach import mach1
 
+   @mach1
    class Calculator:
 
        def add(self, int: a, int: b):
@@ -48,7 +49,7 @@ You can make command line application using the decorator ``mach1``:
    calc.run()
 
 Now if you run the module, you will get a program that you can invoke with
-the flag ``-h`` or ``--help``:x:
+the flag ``-h`` or ``--help``:
 
 .. code:: shell
 

@@ -18,3 +18,4 @@ secret.txt
 *~
 .vagrant*
 .idea
+docs/_build/*
