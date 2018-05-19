@@ -129,7 +129,7 @@ def add_parsers(name, function, doc, sig, subparsers):
 
     for idx, val in enumerate(reversed(sig.args[1:])):
         subpargs, opts = [], {}
-        opts['help'] = doc[val]
+        opts['help'] = doc.get(val, '')
         type_ = sig.annotations.get(val)
         if type_ and type_.__name__ == 'bool':
             opts['action'] = "store_true"
@@ -203,18 +203,18 @@ def _run1(inst):
             return True
 
 
-def _run2(inst):
+def _run2(inst):  # pragma: no coverage
     if not inst._run1():
         inst.cmdloop()
 
 
-def mach1(kls):
+def mach1(kls):  # pragma: no coverage
     kls = _mach(kls)
     kls.run = _run1
     return kls
 
 
-def mach2(kls):
+def mach2(kls): #  pragma: no coverage
     kls = _mach(kls, add_do=True)
     kls._run1 = _run1
     kls.run = _run2
