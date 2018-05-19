@@ -107,7 +107,6 @@ def parse_docs(docstring):
 
     doc = docstring.split("\n")
     doc_dict = {'cmd': doc[0]}
-
     if len(doc) > 1:
         doc = {k: v for k, v in
                (item.split(' - ') for item in
@@ -148,6 +147,9 @@ def add_parsers(name, function, doc, sig, subparsers):
 
     return name, function, doc
 
+def create_helper(doc, name):
+    return lambda name: print(doc)
+
 
 def _mach(kls, add_do=False):
 
@@ -162,15 +164,17 @@ def _mach(kls, add_do=False):
 
     if add_do:
         do_kls = type(kls.__name__, (Mach, kls), {})
-
     for (name, function) in inspect.getmembers(kls,
                                                predicate=inspect.isfunction):
-        doc = parse_docs(inspect.getdoc(function))
+        _d = inspect.getdoc(function)
+        doc = parse_docs(_d)
         sig = inspect.getfullargspec(function)
         add_parsers(name, function, doc, sig, subparsers)
 
         if add_do:
             setattr(do_kls, "do_%s" % name, function)
+            setattr(do_kls, "help_%s" % name, create_helper(_d, name))
+
 
     if hasattr(kls, 'default'):
         parser.set_default_subparser(kls.default)
