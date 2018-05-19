@@ -2,24 +2,18 @@
 # -*- coding: utf-8 -*-
 
 """Tests for `mach` package."""
+import os
+import sys
+
 
 import pytest
 
 
-from mach import mach
+from mach import mach1, mach2
 
 
-@pytest.fixture
-def response():
-    """Sample pytest fixture.
+import examples
+from examples.greet import Hello
+#from examples.calc import Calculator
+from examples.calc2 import Calculator as Calc2
 
-    See more at: http://doc.pytest.org/en/latest/fixture.html
-    """
-    # import requests
-    # return requests.get('https://github.com/audreyr/cookiecutter-pypackage')
-
-
-def test_content(response):
-    """Sample pytest test function with the pytest fixture as an argument."""
-    # from bs4 import BeautifulSoup
-    # assert 'GitHub' in BeautifulSoup(response.content).title.string
