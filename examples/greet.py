@@ -58,4 +58,5 @@ class Hello:
         print("It was nice to meet you!")
 
 
-Hello().run()
+if __name__ == '__main__':
+    Hello().run()

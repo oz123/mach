@@ -38,8 +38,8 @@ class Calculator:
         sys.exit(0)
 
 
-calc = Calculator()
-calc.intro = 'Welcome to the calc shell. Type help or ? to list commands.\n'
-calc.prompt = 'calc2 > '
-
-calc.run()
+if __name__ == '__main__':
+    calc = Calculator()
+    calc.intro = 'Welcome to the calc shell. Type help or ? to list commands.\n'
+    calc.prompt = 'calc2 > '
+    calc.run()
