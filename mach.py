@@ -186,8 +186,8 @@ def _mach(kls, add_do=False):
     return kls
 
 
-def _run1(inst):  # pragma: no coverage
-    p = inst.parser.parse_args()
+def _run1(inst, args=None):
+    p = inst.parser.parse_args(args=args)
 
     if p.cmd:
         func_args_kwargs = inspect.getfullargspec(getattr(inst, p.cmd))

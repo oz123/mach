@@ -20,6 +20,7 @@ import examples
 from examples.greet import Hello
 from examples.calc import Calculator
 from examples.calc2 import Calculator as Calc2
+from examples.uftpd import uFTPD
 
 
 def test_hello():
@@ -54,3 +55,20 @@ def test_calc2():
 
     # TODO: add assertions here
     calc.onecmd('add 1 2')
+
+
+
+def test_uftpd():
+
+    uftpd = uFTPD()
+    try:
+        uftpd.run(['server', '--version'])
+    except SystemExit:
+        pass
+
+    opts="""--opts={"ftp": 21, "foo": "bar"}"""
+
+    try:
+        uftpd.run(['server', opts])
+    except SystemExit:
+        pass
