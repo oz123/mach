@@ -182,7 +182,7 @@ def _mach(kls, add_do=False):
     return kls
 
 
-def _run1(inst):
+def _run1(inst):  # pragma: no coverage
     p = inst.parser.parse_args()
 
     if p.cmd:
