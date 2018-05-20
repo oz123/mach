@@ -7,6 +7,7 @@ import cmd
 import os
 import sys
 
+from io import StringIO
 from unittest import mock
 
 
@@ -21,6 +22,7 @@ from examples.greet import Hello
 from examples.calc import Calculator
 from examples.calc2 import Calculator as Calc2
 from examples.uftpd import uFTPD
+from examples.lftp import FTPClient
 
 
 def test_hello():
@@ -38,23 +40,33 @@ def test_calc():
 
 
 def test_calc2():
-    mock_stdin = mock.create_autospec(sys.stdin)
-    mock_stdout = mock.create_autospec(sys.stdout)
 
-    calc = Calc2(stdin=mock_stdin, stdout=mock_stdout)
+    calc = Calc2()
 
     assert isinstance(calc.parser, argparse.ArgumentParser)
     assert isinstance(calc, cmd.Cmd)
 
     # https://stackoverflow.com/q/34500249/492620
-    # TODO: add assertions here
-    calc.add(1, 3)
+    with mock.patch('sys.stdout', new=StringIO()) as fakeOutput:
+        calc.add(1, 3)
+        assert '1 + 3 => 4' == fakeOutput.getvalue().strip()
 
-    # TODO: add assertions here
-    calc.do_add(1, 3)
+    with mock.patch('sys.stdout', new=StringIO()) as fakeOutput:
+        calc.do_add(1, 3)
+        assert '1 + 3 => 4' == fakeOutput.getvalue().strip()
 
-    # TODO: add assertions here
-    calc.onecmd('add 1 2')
+    with mock.patch('sys.stdout', new=StringIO()) as fakeOutput:
+        calc.onecmd('add 1 2')
+        assert '1 + 2 => 3' == fakeOutput.getvalue().strip()
+
+
+def test_calc2_no_interactive():
+    calc = Calc2()
+
+    # this is ./examples/calc2.py add 2 4
+    with mock.patch('sys.stdout', new=StringIO()) as fakeOutput:
+        calc._run1(["add", "2", "4"])
+        assert '4 + 2 => 6' == fakeOutput.getvalue().strip()
 
 
 
@@ -72,3 +84,26 @@ def test_uftpd():
         uftpd.run(['server', opts])
     except SystemExit:
         pass
+
+
+@pytest.mark.parametrize("input,output", [
+     ("connect foo.example.com 21", "Connected to foo.example.com:21"),
+     ("connect foo.example.com", "Connected to foo.example.com:21"),
+     ("login foo s3kr35", "Login success ..."),
+     ('""', '*** Unknown syntax: ""'),
+     ("login foo bar bla", "*** Unknown syntax: login foo bar bla"),
+     ("moo", "*** Unknown syntax: moo"),
+     ("ls", "Files in /"),
+     ("ls /foo/", "Files in /foo/"),
+])
+def test_lftp(input, output):
+    ftpc = FTPClient(stdout=StringIO())
+
+    ftpc.onecmd(input)
+    assert ftpc.stdout.getvalue().strip() == output
+
+
+
+def test_lftp_un():
+    dummy = StringIO("connect foo.example.com 21\nlogin user s3kr35\n\nls")
+

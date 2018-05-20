@@ -51,7 +51,6 @@ class Mach(Cmd):
 
     def onecmd(self, line):
         cmd, arg, line = self.parseline(line)
-
         if not line:
             return self.emptyline()
         if cmd is None:
@@ -72,6 +71,7 @@ class Mach(Cmd):
         try:
             func = getattr(self, 'do_' + cmd)
         except AttributeError:
+            # when a method is not found
             return self.default(line)
 
         sig = inspect.getfullargspec(func)
@@ -85,6 +85,7 @@ class Mach(Cmd):
         try:
             return func(*arg, **di)
         except ValueError:
+            # when a method is wrongly used
             return self.default(line)
 
         except TypeError:

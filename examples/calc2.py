@@ -32,7 +32,7 @@ class Calculator:
         """divide one number  by the other"""
         print("%s / %s => %d" % (a, b, int(a) // int(b)))
 
-    def exit(self, args):
+    def exit(self):
         """exist to finish this session"""
         print("Come back soon ...")
         sys.exit(0)

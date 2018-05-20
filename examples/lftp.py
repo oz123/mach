@@ -11,7 +11,7 @@ class FTPClient:
     def login(self, user: str, password: str):
         """login to the FTP server"""
 
-        print(user, password)
+        self.stdout.write("Login success ...\n")
 
     def connect(self, host: str, port: int=21):
         """connect to FTP host
@@ -19,11 +19,11 @@ class FTPClient:
         host - the host IP or fqdn
         port - the port listening to FTP
         """
-        pass
+        self.stdout.write("Connected to %s:%s\n" % (host, port))
 
-    def ls(self):
-        """list files in the current directory"""
-        pass
+    def ls(self, dir: str="/"):
+        """list files in dir"""
+        self.stdout.write("Files in %s\n" % dir)
 
     def exit(self):
         """exit the program"""
