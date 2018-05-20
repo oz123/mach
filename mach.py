@@ -64,9 +64,6 @@ class Mach(Cmd):
         arg = shlex.split(arg)
         arg, args_with_val = partition(lambda x: "=" in x, arg)
         di = {}
-        for item in args_with_val:
-            name, val = item.split('=')
-            di[name] = val
 
         try:
             func = getattr(self, 'do_' + cmd)
@@ -75,12 +72,22 @@ class Mach(Cmd):
             return self.default(line)
 
         sig = inspect.getfullargspec(func)
+        for item in args_with_val:
+            name, val = item.split('=')
+            if name != sig.varkw and name not in sig.args[1:]:
+                self.stdout.write("Unknown option %s\n" % name)
+                return
+            di[name] = val
+
 
         if sig.varkw:
             try:
                 kwargs = json.loads(di.pop(sig.varkw))
                 di.update(kwargs)
             except json.decoder.JSONDecodeError:
+                self.stdout.write("Could not parse JSON in %s\n" % sig.varkw)
+                return
+            except KeyError:
                 pass
         try:
             return func(*arg, **di)

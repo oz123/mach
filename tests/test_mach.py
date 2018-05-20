@@ -89,21 +89,25 @@ def test_uftpd():
 @pytest.mark.parametrize("input,output", [
      ("connect foo.example.com 21", "Connected to foo.example.com:21"),
      ("connect foo.example.com", "Connected to foo.example.com:21"),
+     ("connect foo.bar.com port=2121", "Connected to foo.bar.com:2121"),
+     ('connect ftp.example.com 21 opts={"user": oz123, "password":s3kr35}', "Could not parse JSON in opts"),
+     ("""connect ftp.example.com 21 opts=\'{"user": "oz123", "password":"s3kr35"}\'""",
+"""Connected to ftp.example.com:21
+Login success ..."""),
      ("login foo s3kr35", "Login success ..."),
      ('""', '*** Unknown syntax: ""'),
      ("login foo bar bla", "*** Unknown syntax: login foo bar bla"),
      ("moo", "*** Unknown syntax: moo"),
      ("ls", "Files in /"),
      ("ls /foo/", "Files in /foo/"),
+     ("help", """Documented commands (type help <topic>):
+========================================
+connect  exit  help  login  ls"""),
+     ("connect foo=21", "Unknown option foo"),
 ])
 def test_lftp(input, output):
     ftpc = FTPClient(stdout=StringIO())
 
     ftpc.onecmd(input)
     assert ftpc.stdout.getvalue().strip() == output
-
-
-
-def test_lftp_un():
-    dummy = StringIO("connect foo.example.com 21\nlogin user s3kr35\n\nls")
 
