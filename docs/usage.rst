@@ -95,3 +95,152 @@ when a sub-command help option is invoked::
      --name NAME    the name of the user to greet (default: )
      --count COUNT  the number of times to greet the user (default: 1)
 
+Advanced ``mach1`` with default values and JSON parsing
+-------------------------------------------------------
+
+You can write methods with default values or with a certain number
+of open options as in ``**kwargs`` passed to a Python method:
+
+See ``examples/uftpd.py`` for an implementation of a hypothetical 
+FTP server example.
+
+You can invoke this ftp server with::
+
+   $ ./examples/uftpd.py --foreground --level 3
+
+This will run the server in the foreground with a verbosity level 3.
+
+   $ ./examples/uftpd.py --opts='{"ftp": 21}'
+   serving FTP on port 21
+
+``opts`` is automatically parsed as JSON. The server will run in
+the background and a verbosity level of 2.
+
+Using ``mach2``
+---------------
+
+The decorator ``mach2`` adds on top of ``mach1`` all the existing
+capabilities, the ability to turn a class to an interactive interpreter.
+The most simple interactive interpreter is a command line calculator:
+
+.. code:: python
+
+   import sys
+   
+   from mach import mach2
+   
+   @mach2
+   class Calculator:
+   
+       def add(self, a: int, b: int):
+           """adds two numbers and prints the result"""
+           print("%s + %s => %d" % (a, b, int(a) + int(b)))
+   
+       def div(self, a: int, b: int):
+           """divide one number  by the other"""
+           print("%s / %s => %d" % (a, b, int(a) // int(b)))
+   
+       def exit(self):
+           """exist to finish this session"""
+           print("Come back soon ...")
+           sys.exit(0)
+   
+   
+   if __name__ == '__main__':
+       calc = Calculator()
+       calc.intro = 'Welcome to the calc shell. Type help or ? to list commands.\n'
+       calc.prompt = 'calc2 > '
+       calc.run()
+
+You can invoke this application via the command line by giving a
+sub-command::
+
+   $ ./examples/calc2.py add 5 6
+   6 + 5 => 11
+
+Or start an interactive session by not giving any sub-command::
+
+   $ ./examples/calc2.py
+   Welcome to the calc shell. Type help or ? to list commands.
+
+   calc2 >
+
+You can now type a command in the interactive interpreter::
+
+   calc2 > add 7 3
+   7 + 3 => 10
+   calc2 > div 16 8
+   16 / 8 => 2
+
+As with ``mach1`` doc-strings are used to documented your application
+functionality::
+
+   calc2 > help div
+   divide one number  by the other
+   calc2 > help add
+   adds two numbers and prints the result
+
+
+Advanced ``mach1`` with default values and JSON parsing
+-------------------------------------------------------
+
+A simple calculator does not all the features ``mach2`` offers.
+A better example is a hypothetical ``FTP`` client.
+
+See ``examples/lftp.py``.
+
+Once started it waits for user input at the ``lftp`` prompt::
+
+   $ ./examples/lftp.py
+   Welcome to the lftp client. Type help or ? to list commands.
+   
+   lftp > help
+   
+   Documented commands (type help <topic>):
+   ========================================
+   connect  exit  help  login  ls
+   
+   lftp > help connect
+   connect to FTP host
+   
+   host - the host IP or fqdn
+   port - the port listening to FTP
+
+Typing the ``help`` command will list the available commands.
+Typing ``help connect`` lists the arguments that the command
+``connect`` gets, by parsing the method's docstring.
+
+Since this command can now be invoked in any of the following ways::
+
+   lftp > connect 10.10.192.192
+   Connected to 10.10.192.192:21
+   
+   lftp > connect host=foo.example.com port=21
+   Connected to foo.example.com:21
+   
+   lftp > connect foo.example.com 2121
+   Connected to foo.example.com:2121
+
+   lftp > connect foo.example.com 21 opts='{"user": "oz123", "password": "s3kr35"}'
+   Connected to foo.example.com:21
+   Login success ...
+
+The last invocation also shows that you can pass extra arguments as JSON.
+
+The interpreter is checking how you invoke the commands. Hence this all don't work::
+
+   lftp > connect foo 2121 bar
+   *** Unknown syntax: connect foo 2121 bar
+   lftp > help login
+   login to the FTP server
+   lftp > login oz123 s3kr35
+   Login success ...
+   lftp > login foobar secret error
+   *** Unknown syntax: login foobar secret error
+   
+``run`` vs. ``cmdlooop`
+~~~~~~~~~~~~~~~~~~~~~~
+This FTP client does use ``mach2`` but it only has the ability
+to run in an interactive mode. It does so, but starting the method
+``cmdloop`` instead of ``run``.
+
