@@ -3,6 +3,9 @@ M.A.C.H
 ========
 .. image:: https://readthedocs.org/projects/mach/badge/?version=latest
    :target: http://mach.readthedocs.io/en/latest/?badge=latest
+   
+.. image:: https://coveralls.io/repos/github/oz123/mach/badge.svg?branch=master
+:target: https://coveralls.io/github/oz123/mach?branch=master
 
 Magical Argparse Command Helper
 
