@@ -3,7 +3,7 @@ python:
   - 3.5
 
 install:
-  - "pip install -r pytest pytest-coverage"
+  - "pip install pytest pytest-coverage"
   - "pip install ."
 
 script: make coverage
