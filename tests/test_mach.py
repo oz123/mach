@@ -104,6 +104,8 @@ Login success ..."""),
 ========================================
 connect  exit  help  login  ls"""),
      ("connect foo=21", "Unknown option foo"),
+     ("""connect foo.example.com 21 opts='{"user": "oz123", "password": "s3kr35"}""",
+      """connect foo.example.com 21 opts='{"user": "oz123", "password": "s3kr35"}: No closing quotation"""),
 ])
 def test_lftp(input, output):
     ftpc = FTPClient(stdout=StringIO())

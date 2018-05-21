@@ -78,7 +78,12 @@ class Mach(Cmd):
         if cmd == '':
             return self.default(line)
 
-        arg = shlex.split(arg)
+        try:
+            arg = shlex.split(arg)
+        except ValueError as e:
+            self.stdout.write(line + ": %s\n" % e)
+            return
+
         arg, args_with_val = partition(lambda x: "=" in x, arg)
         di = {}
 
@@ -97,29 +102,33 @@ class Mach(Cmd):
             di[name] = val
 
 
-        if sig.varkw:
+        if sig.varkw and sig.varkw in di:
             try:
                 kwargs = json.loads(di.pop(sig.varkw))
                 di.update(kwargs)
             except json.decoder.JSONDecodeError:
                 self.stdout.write("Could not parse JSON in %s\n" % sig.varkw)
                 return
-            except KeyError:
-                pass
+
         try:
             return func(*arg, **di)
         except ValueError:
             # when a method is wrongly used
             return self.default(line)
 
-        except TypeError:
-            pass
+        except TypeError as e:
+            if e.args[0].endswith(
+                "missing 1 required positional argument: 'arg'"):
+                return func("")
+            else:
+                return self.default(line)
+
 
         # Cmd methods except one arg
-        try:
-            return func("")
-        except TypeError:
-            return self.default(line)
+        #try:
+        #    return func("")
+        #except TypeError:
+        #    return self.default(line)
 
 
 _supported_types = {'str': str, 'float': float, 'int': int}
