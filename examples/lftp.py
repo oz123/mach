@@ -21,9 +21,8 @@ class FTPClient:
         """
         self.stdout.write("Connected to %s:%s\n" % (host, port))
 
-        if 'user' in opts and 'password' in opts:
-            self.stdout.write("Login success ...\n")
-
+        if opts:
+            self.login(**opts)
 
     def ls(self, dir: str="/"):
         """list files in dir"""
