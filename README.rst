@@ -1,11 +1,13 @@
 ========
 M.A.C.H
 ========
+.. image:: https://readthedocs.org/projects/mach/badge/?version=latest
+   :target: http://mach.readthedocs.io/en/latest/?badge=latest
+
+Magical Argparse Command Helper
 
 .. image:: https://raw.githubusercontent.com/oz123/mach/master/imgs/mach-logo.jpg
 
-Magical Argparse Command Helper
--------------------------------
 
 Features
 --------

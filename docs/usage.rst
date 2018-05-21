@@ -237,9 +237,9 @@ The interpreter is checking how you invoke the commands. Hence this all don't wo
    Login success ...
    lftp > login foobar secret error
    *** Unknown syntax: login foobar secret error
-   
+ 
 ``run`` vs. ``cmdlooop`
-~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
 This FTP client does use ``mach2`` but it only has the ability
 to run in an interactive mode. It does so, but starting the method
 ``cmdloop`` instead of ``run``.
