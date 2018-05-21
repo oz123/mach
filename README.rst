@@ -2,6 +2,8 @@
 M.A.C.H
 ========
 
+.. image:: https://raw.githubusercontent.com/oz123/mach/master/imgs/mach-logo.jpg
+
 Magical Argparse Command Helper
 -------------------------------
 
