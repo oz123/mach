@@ -1,4 +1,7 @@
 *.pyc
+.pytest_cache*
+AUTHORS
+ChangeLog
 *.egg-info/*
 *swo
 docs/build/*

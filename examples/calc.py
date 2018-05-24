@@ -25,6 +25,8 @@ class Calculator:
         print("%s / %s => %d" % (a, b, int(a) // int(b)))
 
 
-calc = Calculator()
 
-calc.run()
+if __name__ == '__main__':
+
+    calc = Calculator()
+    calc.run()

@@ -1,3 +1,20 @@
+"""
+This file is part of m.a.c.h.
+
+m.a.c.h is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+m.a.c.h is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with m.a.c.h.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
 import argparse
 import inspect
 import json
@@ -51,7 +68,6 @@ class Mach(Cmd):
 
     def onecmd(self, line):
         cmd, arg, line = self.parseline(line)
-
         if not line:
             return self.emptyline()
         if cmd is None:
@@ -62,39 +78,57 @@ class Mach(Cmd):
         if cmd == '':
             return self.default(line)
 
-        arg = shlex.split(arg)
+        try:
+            arg = shlex.split(arg)
+        except ValueError as e:
+            self.stdout.write(line + ": %s\n" % e)
+            return
+
         arg, args_with_val = partition(lambda x: "=" in x, arg)
         di = {}
-        for item in args_with_val:
-            name, val = item.split('=')
-            di[name] = val
 
         try:
             func = getattr(self, 'do_' + cmd)
         except AttributeError:
+            # when a method is not found
             return self.default(line)
 
         sig = inspect.getfullargspec(func)
+        for item in args_with_val:
+            name, val = item.split('=')
+            if name != sig.varkw and name not in sig.args[1:]:
+                self.stdout.write("Unknown option %s\n" % name)
+                return
+            di[name] = val
 
-        if sig.varkw:
+
+        if sig.varkw and sig.varkw in di:
             try:
                 kwargs = json.loads(di.pop(sig.varkw))
                 di.update(kwargs)
             except json.decoder.JSONDecodeError:
-                pass
+                self.stdout.write("Could not parse JSON in %s\n" % sig.varkw)
+                return
+
         try:
             return func(*arg, **di)
         except ValueError:
+            # when a method is wrongly used
             return self.default(line)
 
-        except TypeError:
-            pass
+        except TypeError as e:
+            if e.args[0].endswith(
+                "missing 1 required positional argument: 'arg'"):
+                return func("")
+            else:
+                return self.default(line)
+
 
         # Cmd methods except one arg
-        try:
-            return func("")
-        except TypeError:
-            return self.default(line)
+        #try:
+        #    return func("")
+        #except TypeError:
+        #    return self.default(line)
 
 
 _supported_types = {'str': str, 'float': float, 'int': int}
@@ -107,7 +141,6 @@ def parse_docs(docstring):
 
     doc = docstring.split("\n")
     doc_dict = {'cmd': doc[0]}
-
     if len(doc) > 1:
         doc = {k: v for k, v in
                (item.split(' - ') for item in
@@ -129,7 +162,7 @@ def add_parsers(name, function, doc, sig, subparsers):
 
     for idx, val in enumerate(reversed(sig.args[1:])):
         subpargs, opts = [], {}
-        opts['help'] = doc[val]
+        opts['help'] = doc.get(val, '')
         type_ = sig.annotations.get(val)
         if type_ and type_.__name__ == 'bool':
             opts['action'] = "store_true"
@@ -148,6 +181,9 @@ def add_parsers(name, function, doc, sig, subparsers):
 
     return name, function, doc
 
+def create_helper(doc, name):
+    return lambda name: print(doc)
+
 
 def _mach(kls, add_do=False):
 
@@ -162,15 +198,17 @@ def _mach(kls, add_do=False):
 
     if add_do:
         do_kls = type(kls.__name__, (Mach, kls), {})
-
     for (name, function) in inspect.getmembers(kls,
                                                predicate=inspect.isfunction):
-        doc = parse_docs(inspect.getdoc(function))
+        _d = inspect.getdoc(function)
+        doc = parse_docs(_d)
         sig = inspect.getfullargspec(function)
         add_parsers(name, function, doc, sig, subparsers)
 
         if add_do:
             setattr(do_kls, "do_%s" % name, function)
+            setattr(do_kls, "help_%s" % name, create_helper(_d, name))
+
 
     if hasattr(kls, 'default'):
         parser.set_default_subparser(kls.default)
@@ -182,8 +220,8 @@ def _mach(kls, add_do=False):
     return kls
 
 
-def _run1(inst):
-    p = inst.parser.parse_args()
+def _run1(inst, args=None):
+    p = inst.parser.parse_args(args=args)
 
     if p.cmd:
         func_args_kwargs = inspect.getfullargspec(getattr(inst, p.cmd))
@@ -203,18 +241,18 @@ def _run1(inst):
             return True
 
 
-def _run2(inst):
+def _run2(inst):  # pragma: no coverage
     if not inst._run1():
         inst.cmdloop()
 
 
-def mach1(kls):
+def mach1(kls):  # pragma: no coverage
     kls = _mach(kls)
     kls.run = _run1
     return kls
 
 
-def mach2(kls):
+def mach2(kls): #  pragma: no coverage
     kls = _mach(kls, add_do=True)
     kls._run1 = _run1
     kls.run = _run2

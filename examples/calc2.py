@@ -32,14 +32,14 @@ class Calculator:
         """divide one number  by the other"""
         print("%s / %s => %d" % (a, b, int(a) // int(b)))
 
-    def exit(self, args):
+    def exit(self):
         """exist to finish this session"""
         print("Come back soon ...")
         sys.exit(0)
 
 
-calc = Calculator()
-calc.intro = 'Welcome to the calc shell. Type help or ? to list commands.\n'
-calc.prompt = 'calc2 > '
-
-calc.run()
+if __name__ == '__main__':
+    calc = Calculator()
+    calc.intro = 'Welcome to the calc shell. Type help or ? to list commands.\n'
+    calc.prompt = 'calc2 > '
+    calc.run()
