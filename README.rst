@@ -129,4 +129,9 @@ parameters are given:
    Come back soon ...
    $
 
+Installation
+------------
 
+You can get mach from PyPI using pip::
+
+   $ pip install mach.py
