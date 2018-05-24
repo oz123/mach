@@ -1,0 +1,14 @@
+language: python
+python:
+  - 3.5
+
+install:
+  - "pip install pytest pytest-coverage coveralls"
+  - "pip install ."
+
+script: make coverage
+
+
+after_success:
+  - coveralls
+  - coverage erase
