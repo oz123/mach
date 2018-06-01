@@ -5,7 +5,7 @@ import sys
 
 from mach import mach2
 
-@mach2
+@mach2()
 class FTPClient:
 
     def login(self, user: str, password: str):
