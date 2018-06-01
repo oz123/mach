@@ -101,7 +101,6 @@ class Mach(Cmd):
                 return
             di[name] = val
 
-
         if sig.varkw and sig.varkw in di:
             try:
                 kwargs = json.loads(di.pop(sig.varkw))
@@ -118,17 +117,10 @@ class Mach(Cmd):
 
         except TypeError as e:
             if e.args[0].endswith(
-                "missing 1 required positional argument: 'arg'"):
+                    "missing 1 required positional argument: 'arg'"):
                 return func("")
             else:
                 return self.default(line)
-
-
-        # Cmd methods except one arg
-        #try:
-        #    return func("")
-        #except TypeError:
-        #    return self.default(line)
 
 
 _supported_types = {'str': str, 'float': float, 'int': int}
@@ -181,11 +173,12 @@ def add_parsers(name, function, doc, sig, subparsers):
 
     return name, function, doc
 
+
 def create_helper(doc, name):
     return lambda name: print(doc)
 
 
-def _mach(kls, add_do=False):
+def _mach(kls, add_do=False, explicit=False):
 
     if hasattr(kls, 'default'):
         parser = DefaultSubcommandArgParse(
@@ -193,6 +186,11 @@ def _mach(kls, add_do=False):
     else:
         parser = argparse.ArgumentParser(
             formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+
+    if explicit:
+        parser.add_argument("--shell",
+                            action='store_true',
+                            help="run an interactive shell")
 
     subparsers = parser.add_subparsers(help='commands', dest="cmd")
 
@@ -209,7 +207,6 @@ def _mach(kls, add_do=False):
             setattr(do_kls, "do_%s" % name, function)
             setattr(do_kls, "help_%s" % name, create_helper(_d, name))
 
-
     if hasattr(kls, 'default'):
         parser.set_default_subparser(kls.default)
 
@@ -222,6 +219,10 @@ def _mach(kls, add_do=False):
 
 def _run1(inst, args=None):
     p = inst.parser.parse_args(args=args)
+
+    if getattr(p, 'shell', False):
+        inst.cmdloop()
+        return True
 
     if p.cmd:
         func_args_kwargs = inspect.getfullargspec(getattr(inst, p.cmd))
@@ -242,7 +243,8 @@ def _run1(inst, args=None):
 
 
 def _run2(inst):  # pragma: no coverage
-    if not inst._run1():
+    if not inst._run1() and (
+            '--shell' not in inst.parser._option_string_actions):
         inst.cmdloop()
 
 
@@ -252,8 +254,16 @@ def mach1(kls):  # pragma: no coverage
     return kls
 
 
-def mach2(kls): #  pragma: no coverage
-    kls = _mach(kls, add_do=True)
-    kls._run1 = _run1
-    kls.run = _run2
-    return kls
+def mach2(explicit=False):
+
+    def real_decorator(callable_, *args, **kwargs):
+
+        def wrapper(*args, **kwargs):
+            kls = _mach(callable_, add_do=True, explicit=explicit)
+            kls._run1 = _run1
+            kls.run = _run2
+            return kls(*args, **kwargs)
+
+        return wrapper
+
+    return real_decorator
