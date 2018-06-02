@@ -4,8 +4,6 @@
 """Tests for `mach` module."""
 import argparse
 import cmd
-import os
-import sys
 
 from io import StringIO
 from unittest import mock
@@ -14,10 +12,6 @@ from unittest import mock
 import pytest
 
 
-from mach import mach1, mach2
-
-
-import examples
 from examples.greet import Hello
 from examples.calc import Calculator
 from examples.calc2 import Calculator as Calc2
@@ -69,7 +63,6 @@ def test_calc2_no_interactive():
         assert '4 + 2 => 6' == fakeOutput.getvalue().strip()
 
 
-
 def test_uftpd():
 
     uftpd = uFTPD()
@@ -78,7 +71,7 @@ def test_uftpd():
     except SystemExit:
         pass
 
-    opts="""--opts={"ftp": 21, "foo": "bar"}"""
+    opts = """--opts={"ftp": 21, "foo": "bar"}"""
 
     try:
         uftpd.run(['server', opts])
@@ -86,14 +79,16 @@ def test_uftpd():
         pass
 
 
-@pytest.mark.parametrize("input,output", [
-     ("connect foo.example.com 21", "Connected to foo.example.com:21"),
+@pytest.mark.parametrize(
+    "input,output",
+    [("connect foo.example.com 21", "Connected to foo.example.com:21"),
      ("connect foo.example.com", "Connected to foo.example.com:21"),
      ("connect foo.bar.com port=2121", "Connected to foo.bar.com:2121"),
-     ('connect ftp.example.com 21 opts={"user": oz123, "password":s3kr35}', "Could not parse JSON in opts"),
-     ("""connect ftp.example.com 21 opts=\'{"user": "oz123", "password":"s3kr35"}\'""",
-"""Connected to ftp.example.com:21
-Login success ..."""),
+     ('connect ftp.example.com 21 opts={"user": oz123, "password":s3kr35}',
+      "Could not parse JSON in opts"),
+     (('connect ftp.example.com 21'
+       ' opts=\'{"user": "oz123", "password":"s3kr35"}\''),
+      'Connected to ftp.example.com:21\nLogin success ...'),
      ("login foo s3kr35", "Login success ..."),
      ('""', '*** Unknown syntax: ""'),
      ("login foo bar bla", "*** Unknown syntax: login foo bar bla"),
