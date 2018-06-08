@@ -8,4 +8,3 @@ Welcome to mach's documentation!
    installation
    usage
    contributing
-   history
