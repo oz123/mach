@@ -20,9 +20,18 @@ import sys
 
 from mach import mach2
 
+class HelperClass:
+
+    def _excluded_method(self):
+        """
+        This method is 'private'. It's name starts with _.
+        Thus, this method does not get a public command line interface
+        """
+        print("This will not be shown")
+
 
 @mach2(explicit=True)
-class Calculator:
+class Calculator(F):
 
     def add(self, a: int, b: int):
         """adds two numbers and prints the result"""
