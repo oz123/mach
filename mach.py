@@ -178,6 +178,14 @@ def create_helper(doc, name):
     return lambda name: print(doc)
 
 
+def not_private(x):
+    """find all methods which do not have a name which starts with _"""
+    try:
+        return not x.__name__.startswith("_") and inspect.isfunction(x)
+    except:
+        return False
+
+
 def _mach(kls, add_do=False, explicit=False):
 
     if hasattr(kls, 'default'):
@@ -196,8 +204,9 @@ def _mach(kls, add_do=False, explicit=False):
 
     if add_do:
         do_kls = type(kls.__name__, (Mach, kls), {})
+
     for (name, function) in inspect.getmembers(kls,
-                                               predicate=inspect.isfunction):
+                                               predicate=not_private):
         _d = inspect.getdoc(function)
         doc = parse_docs(_d)
         sig = inspect.getfullargspec(function)
