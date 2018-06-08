@@ -21,7 +21,7 @@ import sys
 from mach import mach2
 
 
-@mach2()
+@mach2(explicit=True)
 class Calculator:
 
     def add(self, a: int, b: int):

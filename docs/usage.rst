@@ -129,7 +129,7 @@ The most simple interactive interpreter is a command line calculator:
    
    from mach import mach2
    
-   @mach2
+   @mach2()
    class Calculator:
    
        def add(self, a: int, b: int):
@@ -237,10 +237,46 @@ The interpreter is checking how you invoke the commands. Hence this all don't wo
    Login success ...
    lftp > login foobar secret error
    *** Unknown syntax: login foobar secret error
- 
-``run`` vs. ``cmdlooop`
-~~~~~~~~~~~~~~~~~~~~~~~
-This FTP client does use ``mach2`` but it only has the ability
-to run in an interactive mode. It does so, but starting the method
-``cmdloop`` instead of ``run``.
 
+
+Explicit shell or implicit shell using `mach2`
+----------------------------------------------
+
+The example `calc2.py` and `lftp` have an implicit shell option.
+That is, if the program called with out arguments it will start an interactive
+shell session, like the Python interpreter itself.
+
+However, you might not desire this behaviour. Instead you prefer an explicit argument
+for a shell invocation. If so, you can simply decorate your class with:
+
+.. code:: python
+
+   @mach2(explicit=True)
+   class Calculator:
+
+       def add(self, a: int, b: int):
+           """adds two numbers and prints the result"""
+           print("%s + %s => %d" % (a, b, int(a) + int(b)))
+
+       ...
+
+ 
+Now, and interactive shell option is added::
+
+   $ ./examples/calc2.py -h
+   usage: calc2.py [-h] [--shell] {add,div,exit} ...
+
+   positional arguments:
+     {add,div,exit}  commands
+       add           adds two numbers and prints the result
+       div           divide one number by the other
+       exit          exist to finish this session
+  
+   optional arguments:
+     -h, --help      show this help message and exit
+     --shell         run an interactive shell (default: False)
+   $ ./examples/calc2.py --shell
+   Welcome to the calc shell. Type help or ? to list commands.
+
+   calc2 >
+   

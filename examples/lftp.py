@@ -37,4 +37,4 @@ if __name__ == '__main__':
     ftpclient.intro = 'Welcome to the lftp client. Type help or ? to list commands.\n'
     ftpclient.prompt = 'lftp > '
 
-    ftpclient.cmdloop()
+    ftpclient.run()
