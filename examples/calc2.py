@@ -31,7 +31,7 @@ class HelperClass:
 
 
 @mach2(explicit=True)
-class Calculator(F):
+class Calculator(HelperClass):
 
     def add(self, a: int, b: int):
         """adds two numbers and prints the result"""
