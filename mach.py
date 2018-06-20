@@ -162,7 +162,11 @@ def add_parsers(name, function, doc, sig, subparsers):
                 opts['type'] = _supported_types[type_.__name__]
         if idx_args_with_defaults and idx < idx_args_with_defaults:
             opts['default'] = _defaults[idx]
-            subpargs.append("--" + val)
+            if len(val) == 1:
+                subpargs.append("-" + val)
+            else:
+                subpargs.append("--" + val)
+                subpargs.append("-" + val[0])
         else:
             subpargs.append(val)
 
