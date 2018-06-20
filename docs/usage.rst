@@ -279,4 +279,45 @@ Now, and interactive shell option is added::
    Welcome to the calc shell. Type help or ? to list commands.
 
    calc2 >
+
+Inheritence and 'private' methods
+---------------------------------
+
+The examples shown above always create a command line interface from
+all methods defined in a class. So if we have a class which inherits
+methods from another class, all methods will have a 'public' command
+line interface:
+
+.. code:: python
+
+   class Foo:
+        def foo(self):
+            pass
+        def bar(self):
+            pass
    
+   @mach1 
+   class Baz(Foo)
+       def do(self):
+           pass
+
+
+This a will create a command line interface for `do` but also
+for `foo` and `bar`. This can be avoided by naming the class method
+with a leading underscore `_`:
+
+.. code:: python
+
+   class Foo:
+        def _foo(self):
+            pass
+        def _bar(self):
+            pass
+   
+   @mach1 
+   class Baz(Foo)
+       def do(self):
+           self._foo()
+
+This creats a command line interface only for `do`, and the 'private'
+methods are hidden.
