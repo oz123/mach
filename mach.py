@@ -190,7 +190,7 @@ def not_private(x):
         return False
 
 
-def _mach(kls, add_do=False, explicit=False):
+def _mach(kls, add_do=False, explicit=True, auto_help=True):
 
     if hasattr(kls, 'default'):
         parser = DefaultSubcommandArgParse(
@@ -226,6 +226,7 @@ def _mach(kls, add_do=False, explicit=False):
     if add_do:
         kls = do_kls
 
+    parser.auto_help = auto_help
     kls.parser = parser
     return kls
 
@@ -254,6 +255,9 @@ def _run1(inst, args=None):
             func(*(getattr(p, arg) for arg in args))
             return True
 
+    elif inst.parser.auto_help:
+        inst.parser.print_help()
+
 
 def _run2(inst):  # pragma: no coverage
     if not inst._run1() and (
@@ -261,10 +265,18 @@ def _run2(inst):  # pragma: no coverage
         inst.cmdloop()
 
 
-def mach1(kls):  # pragma: no coverage
-    kls = _mach(kls)
-    kls.run = _run1
-    return kls
+def mach1(auto_help=True):  # pragma: no coverage
+
+    def real_decorator(callable_, *args, **kwargs):
+
+        def wrapper(*args, **kwargs):
+            kls = _mach(callable_, explicit=False, auto_help=auto_help)
+            kls.run = _run1
+            return kls(*args, **kwargs)
+
+        return wrapper
+
+    return real_decorator
 
 
 def mach2(explicit=False):

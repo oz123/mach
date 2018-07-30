@@ -16,7 +16,7 @@ Example ``mach1``
    from mach import mach1
 
 
-   @mach1
+   @mach1()
    class Hello:
 
        default = 'greet'
@@ -300,7 +300,7 @@ line interface:
         def bar(self):
             pass
 
-   @mach1
+   @mach1()
    class Baz(Foo)
        def do(self):
            pass
@@ -318,7 +318,7 @@ with a leading underscore `_`:
         def _bar(self):
             pass
 
-   @mach1
+   @mach1()
    class Baz(Foo)
        def do(self):
            self._foo()

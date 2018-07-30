@@ -30,7 +30,7 @@ import sys
 from mach import mach1
 
 
-@mach1
+@mach1()
 class uFTPD:
 
     default = 'server'

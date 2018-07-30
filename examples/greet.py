@@ -35,7 +35,7 @@ optional arguments:
 from mach import mach1
 
 
-@mach1
+@mach1()
 class Hello:
 
     default = 'greet'

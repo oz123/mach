@@ -40,7 +40,7 @@ You can make command line application using the decorator ``mach1``:
 
    from mach import mach1
 
-   @mach1
+   @mach1()
    class Calculator:
 
        def add(self, int: a, int: b):

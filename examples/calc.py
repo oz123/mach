@@ -13,7 +13,7 @@ turns your class into a command line application.
 from mach import mach1
 
 
-@mach1
+@mach1()
 class Calculator:
 
     def add(self, a: int, b: int):
@@ -23,7 +23,6 @@ class Calculator:
     def div(self, a: int, b: int):
         """divide one number by the other"""
         print("%s / %s => %d" % (a, b, int(a) // int(b)))
-
 
 
 if __name__ == '__main__':
