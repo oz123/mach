@@ -18,16 +18,10 @@ along with m.a.c.h.  If not, see <http://www.gnu.org/licenses/>.
 import argparse
 import inspect
 import json
-import pkg_resources
 import shlex
 
 from cmd import Cmd
 from itertools import filterfalse, tee
-
-try:
-    __version__ = pkg_resources.get_distribution('pwman3').version
-except pkg_resources.DistributionNotFound:  # pragma: no cover
-    __version__ = "0.0.1"
 
 
 def partition(pred, iterable):
