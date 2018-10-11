@@ -249,7 +249,15 @@ def _run1(inst, args=None):
             func(*(getattr(p, arg) for arg in args))
             return True
 
-    elif inst.parser.auto_help:
+    executed = False
+
+    for item, val in p._get_kwargs():
+        if val:
+            func = getattr(inst, '_get_' + item)
+            func()
+            executed = True
+
+    if inst.parser.auto_help and not executed:
         inst.parser.print_help()
 
 
