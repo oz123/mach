@@ -185,7 +185,14 @@ def not_private(x):
 
 
 def _mach(kls, add_do=False, explicit=True, auto_help=True):
-
+    """
+    Args:
+        add_do (bool): for each method add a method prefixed with do_`name`.
+        This allows for creating interactive shells.
+        explicit (bool): add argument `--shell` to start a program shell.
+        If set to false calling ``prog.py`` will start a shell.
+        auto_help (bool): Automatically add a help for the program.
+    """
     if hasattr(kls, 'default'):
         parser = DefaultSubcommandArgParse(
             formatter_class=argparse.ArgumentDefaultsHelpFormatter)
