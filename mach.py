@@ -180,7 +180,7 @@ def not_private(x):
     """find all methods which do not have a name which starts with _"""
     try:
         return not x.__name__.startswith("_") and inspect.isfunction(x)
-    except:
+    except AttributeError:
         return False
 
 
