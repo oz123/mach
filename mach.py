@@ -18,6 +18,7 @@ along with m.a.c.h.  If not, see <http://www.gnu.org/licenses/>.
 import argparse
 import inspect
 import json
+import re
 import shlex
 
 from cmd import Cmd
@@ -124,9 +125,15 @@ def parse_docs(docstring):
     """
     Parse documentation string and create a help string
     """
+    extra = re.search("---", docstring)
+    if extra: docstring = docstring[:extra.start()]
+    else: extra = ""
+    doc = docstring.lstrip("\n").split("\n")
+    try:
+        doc_dict = {'cmd': doc[0] + extra.string[extra.start()+3:]}
+    except AttributeError:
+        doc_dict = {'cmd': doc[0]}
 
-    doc = docstring.split("\n")
-    doc_dict = {'cmd': doc[0]}
     if len(doc) > 1:
         doc = {k: v for k, v in
                (item.split(' - ') for item in
