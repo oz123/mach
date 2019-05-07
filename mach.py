@@ -24,7 +24,7 @@ import shlex
 from cmd import Cmd
 from itertools import filterfalse, tee
 
-__version__ = 0.4
+__version__ = "0.4.2"
 
 def partition(pred, iterable):
     'Use a predicate to partition entries into false entries and true entries'
