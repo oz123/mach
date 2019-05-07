@@ -325,3 +325,25 @@ with a leading underscore `_`:
 
 This creats a command line interface only for `do`, and the 'private'
 methods are hidden.
+
+Extra long help for subcommands
+-------------------------------
+
+You can use an extended help format for subcommands. Just add `---`
+after describing the options of each subcommand. Below these `---`
+you can add a longer text which will be shown next to each subcommand.
+This is demonstated by the example `uftpd2.py`:
+
+.. code:: shell
+
+   ./examples/uftpd2.py -h
+   usage: uftpd2.py [-h] {server} ...
+
+   positional arguments:
+     {server}    commands
+       server    No nonsense TFTP/FTP Server. add some long test below these
+                 three dashes
+
+   optional arguments:
+     -h, --help  show this help message and exit
+

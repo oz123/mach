@@ -18,13 +18,13 @@ along with m.a.c.h.  If not, see <http://www.gnu.org/licenses/>.
 import argparse
 import inspect
 import json
+import re
 import shlex
 
 from cmd import Cmd
 from itertools import filterfalse, tee
 
 __version__ = 0.4
-
 
 def partition(pred, iterable):
     'Use a predicate to partition entries into false entries and true entries'
@@ -126,9 +126,15 @@ def parse_docs(docstring):
     """
     Parse documentation string and create a help string
     """
+    extra = re.search("---", docstring)
+    if extra: docstring = docstring[:extra.start()]
+    else: extra = ""
+    doc = docstring.lstrip("\n").split("\n")
+    try:
+        doc_dict = {'cmd': doc[0] + extra.string[extra.start()+3:]}
+    except AttributeError:
+        doc_dict = {'cmd': doc[0]}
 
-    doc = docstring.split("\n")
-    doc_dict = {'cmd': doc[0]}
     if len(doc) > 1:
         doc = {k: v for k, v in
                (item.split(' - ') for item in
@@ -187,7 +193,14 @@ def not_private(x):
 
 
 def _mach(kls, add_do=False, explicit=True, auto_help=True):
-
+    """
+    Args:
+        add_do (bool): for each method add a method prefixed with do_`name`.
+        This allows for creating interactive shells.
+        explicit (bool): add argument `--shell` to start a program shell.
+        If set to false calling ``prog.py`` will start a shell.
+        auto_help (bool): Automatically add a help for the program.
+    """
     if hasattr(kls, 'default'):
         parser = DefaultSubcommandArgParse(
             formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -251,7 +264,15 @@ def _run1(inst, args=None):
             func(*(getattr(p, arg) for arg in args))
             return True
 
-    elif inst.parser.auto_help:
+    executed = False
+
+    for item, val in p._get_kwargs():
+        if val:
+            func = getattr(inst, '_get_' + item)
+            func()
+            executed = True
+
+    if inst.parser.auto_help and not executed:
         inst.parser.print_help()
 
 
