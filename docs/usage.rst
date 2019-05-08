@@ -243,6 +243,40 @@ The interpreter is checking how you invoke the commands. Hence this all don't wo
    *** Unknown syntax: login foobar secret error
 
 
+
+Flags vs. Commands
+------------------
+
+Sometime you want to add global flags to your applications. Here is an
+hypothetical CLI application:
+
+.. code:: shell
+
+   $ ./bolt --verbositiy=2 clone https://...
+
+This application launches the subcommand clone with the verbosity level 2.
+This can be done with:
+
+
+.. code:: python
+
+    @mach1()
+    class Bolt:
+        """
+        The main entry point for the program. This class does the CLI parsing
+        and descides which action shoud be taken
+        """
+        def __init__(self):
+            self.parser.add_argument("-v", "--verbosity")
+            self._verbosity = 1
+
+        def _set_verbosity(self, value):
+            "set verbosity"
+            self._verbosity = value
+
+
+See the example ``bolt.py`` for more details.
+
 Explicit shell or implicit shell using `mach2`
 ----------------------------------------------
 

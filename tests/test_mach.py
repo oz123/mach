@@ -17,6 +17,7 @@ from examples.calc import Calculator
 from examples.calc2 import Calculator as Calc2
 from examples.uftpd import uFTPD
 from examples.lftp import FTPClient
+from examples.bolt import Bolt
 
 
 def test_hello():
@@ -99,12 +100,28 @@ def test_uftpd():
 ========================================
 connect  exit  help  login  ls"""),
      ("connect foo=21", "Unknown option foo"),
-     ("""connect foo.example.com 21 opts='{"user": "oz123", "password": "s3kr35"}""",
-      """connect foo.example.com 21 opts='{"user": "oz123", "password": "s3kr35"}: No closing quotation"""),
-])
+     ("""connect foo.example.com 21 opts='{"user": "oz123", "password": "s3kr35"}""",  # noqa: E501
+      """connect foo.example.com 21 opts='{"user": "oz123", "password": "s3kr35"}: No closing quotation"""),  # noqa: E501
+     ])
 def test_lftp(input, output):
     ftpc = FTPClient(stdout=StringIO())
 
     ftpc.onecmd(input)
     assert ftpc.stdout.getvalue().strip() == output
 
+
+@pytest.mark.parametrize(
+    "input,output",
+    [("--version", "This is Bolt version 0.1"),
+     ("-v 2 clone", "Clonning with verbosity level of 2"),
+     ("clone", "Clonning with verbosity level of 1"),
+     ("--version -v 2 clone", "This is Bolt version 0.1")
+     ])
+def test_bolt(input, output):
+    bolt = Bolt()
+    try:
+        with mock.patch('sys.stdout', new=StringIO()) as fakeOutput:
+            bolt.run(input.split())
+            assert fakeOutput.getvalue().strip() == output
+    except SystemExit:
+        pass

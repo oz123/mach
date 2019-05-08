@@ -26,6 +26,7 @@ from itertools import filterfalse, tee
 
 __version__ = "0.4.2"
 
+
 def partition(pred, iterable):
     'Use a predicate to partition entries into false entries and true entries'
     # partition(is_odd, range(10)) --> 0 2 4 6 8   and  1 3 5 7 9
@@ -131,7 +132,7 @@ def parse_docs(docstring):
     else: extra = ""
     doc = docstring.lstrip("\n").split("\n")
     try:
-        doc_dict = {'cmd': doc[0] + extra.string[extra.start()+3:]}
+        doc_dict = {'cmd': doc[0] + extra.string[extra.start() + 3:]}
     except AttributeError:
         doc_dict = {'cmd': doc[0]}
 
@@ -241,11 +242,25 @@ def _mach(kls, add_do=False, explicit=True, auto_help=True):
 
 
 def _run1(inst, args=None):
+
     p = inst.parser.parse_args(args=args)
 
     if getattr(p, 'shell', False):
         inst.cmdloop()
         return True
+
+    for item, val in p._get_kwargs():
+        if item == 'cmd':
+            continue
+        if getattr(p, item):
+            func = getattr(inst, '_get_' + item, None) or \
+                getattr(inst, '_set_' + item, None)
+
+            if func:
+                if val:
+                    func(val)
+                else:
+                    func()
 
     if p.cmd:
         func_args_kwargs = inspect.getfullargspec(getattr(inst, p.cmd))
@@ -264,15 +279,7 @@ def _run1(inst, args=None):
             func(*(getattr(p, arg) for arg in args))
             return True
 
-    executed = False
-
-    for item, val in p._get_kwargs():
-        if val:
-            func = getattr(inst, '_get_' + item)
-            func()
-            executed = True
-
-    if inst.parser.auto_help and not executed:
+    if inst.parser.auto_help:
         inst.parser.print_help()
 
 
