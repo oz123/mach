@@ -247,7 +247,7 @@ The interpreter is checking how you invoke the commands. Hence this all don't wo
 Flags vs. Commands
 ------------------
 
-Sometime you want to add global flags to your applications. Here is an
+Sometimes you want to add global flags to your applications. Here is an
 hypothetical CLI application:
 
 .. code:: shell
