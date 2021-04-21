@@ -268,10 +268,7 @@ def _run1(inst, args=None):
         args.pop(args.index("self"))
         if func_args_kwargs.varkw:
             kwargs = getattr(p, func_args_kwargs.varkw)
-            if kwargs:
-                kwargs = json.loads(kwargs)
-            else:
-                kwargs = {}
+            kwargs = json.loads(kwargs) if kwargs else {}
             func = getattr(inst, p.cmd)
             func(*(getattr(p, arg) for arg in args), **kwargs)
         else:
