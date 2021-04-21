@@ -50,7 +50,7 @@ class Hello:
         if not name:
             name = input('Your name: ')
 
-        for c in range(count):
+        for _ in range(count):
             print("Hello %s" % name)
 
     def part(self):
